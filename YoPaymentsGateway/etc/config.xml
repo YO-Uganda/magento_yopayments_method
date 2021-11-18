@@ -1,0 +1,33 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © Magento, Inc. All rights reserved.
+ * See COPYING.txt for license details.
+ *
+ * Module Created By : Rohan Hapani
+ */
+-->
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="../../Store/etc/config.xsd">
+    <default>
+        <payment>
+            <yopaymentsgw>
+                <payment_action>authorize</payment_action> <!-- You can use another method like authorize,capture etc.  -->
+                <model>YoPaymentsGatewayFacade</model>
+                <merchant_gateway_key backend_model="Magento\Config\Model\Config\Backend\Encrypted" />
+                <active>1</active>
+                <title>Yo! Payments Gateway</title>
+                <order_status>pending_payment</order_status> <!-- Set your default order status -->
+                <currency>UGX</currency>
+                <can_authorize>1</can_authorize>
+                <can_capture>0</can_capture>
+                <can_void>0</can_void>
+                <can_use_checkout>1</can_use_checkout>
+                <is_gateway>1</is_gateway>
+                <sort_order>1</sort_order>
+                <debugReplaceKeys>MERCHANT_KEY</debugReplaceKeys>
+                <paymentInfoKeys>FRAUD_MSG_LIST</paymentInfoKeys>
+                <privateInfoKeys>FRAUD_MSG_LIST</privateInfoKeys>
+            </yopaymentsgw>
+        </payment>
+    </default>
+</config>   

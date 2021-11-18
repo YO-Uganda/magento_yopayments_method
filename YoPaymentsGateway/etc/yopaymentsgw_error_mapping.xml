@@ -1,0 +1,9 @@
+<mapping xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:module:Magento_Payment:etc/error_mapping.xsd">
+    <message_list>
+        <message code="-9999" translate="true">You have submitted invalid XML, or one or more fields in the XML request you have submitted is missing or invalid. If you get this error code, check the StatusMessage parameter for more detailed information.</message>
+        <message code="2" translate="true">The transaction failed -- see 'ErrorMessage' for more information.</message>
+        <message code="3" translate="true">The transaction failed but we encountered an error updating the transaction state to mark the transaction as FAILED. The transaction is still in the INDETERMINATE state and will need to be manually marked as FAILED, and for a completion time to be added. If you get this error code, consider your transaction as FAILED. The transaction state will be updated to FAILED within 24 hours. Contact support services if the transaction state is not yet updated within 24 hours of your receiving this message..</message>
+        <message code="-9989" translate="true">Invalid phone number</message>
+        <message code="10000" translate="true">Yo Payments Gateway Error</message>
+    </message_list>
+</mapping>

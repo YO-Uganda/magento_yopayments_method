@@ -1,0 +1,144 @@
+<?xml version="1.0"?>
+<!--
+/**
+ * Copyright © 2016 Magento. All rights reserved.
+ * See COPYING.txt for license details.
+ */
+-->
+
+<config xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:noNamespaceSchemaLocation="urn:magento:framework:ObjectManager/etc/config.xsd">
+    <!-- Payment Method Facade configuration -->
+    <virtualType name="YoPaymentsGatewayFacade" type="Magento\Payment\Model\Method\Adapter">
+        <arguments>
+            <argument name="code" xsi:type="const">YoUgandaLimited\YoPaymentsGateway\Model\Ui\ConfigProvider::CODE</argument>
+            <argument name="formBlockType" xsi:type="string">Magento\Payment\Block\Form</argument>
+            <argument name="infoBlockType" xsi:type="string">YoUgandaLimited\YoPaymentsGateway\Block\Info</argument>
+            <argument name="valueHandlerPool" xsi:type="object">YoPaymentsGatewayValueHandlerPool</argument>
+            <argument name="commandPool" xsi:type="object">YoPaymentsGatewayCommandPool</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Configuration reader -->
+    <virtualType name="YoPaymentsGatewayConfig" type="Magento\Payment\Gateway\Config\Config">
+        <arguments>
+            <argument name="methodCode" xsi:type="const">YoUgandaLimited\YoPaymentsGateway\Model\Ui\ConfigProvider::CODE</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Logger, initialized with YoPaymentsGatewayConfig -->
+    <virtualType name="YoPaymentsGatewayLogger" type="Magento\Payment\Model\Method\Logger">
+        <arguments>
+            <argument name="config" xsi:type="object">YoPaymentsGatewayConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="YoUgandaLimited\YoPaymentsGateway\Gateway\Http\Client\ClientMock">
+        <arguments>
+            <argument name="logger" xsi:type="object">YoPaymentsGatewayLogger</argument>
+        </arguments>
+    </type>
+
+    <!-- Commands infrastructure -->
+    <virtualType name="YoPaymentsGatewayCommandPool" type="Magento\Payment\Gateway\Command\CommandPool">
+        <arguments>
+            <argument name="commands" xsi:type="array">
+                <item name="authorize" xsi:type="string">YoPaymentsGatewayAuthorizeCommand</item>
+                <item name="capture" xsi:type="string">YoPaymentsGatewayCaptureCommand</item>
+                <item name="void" xsi:type="string">YoPaymentsGatewayVoidCommand</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorize command -->
+    <virtualType name="YoPaymentsGatewayAuthorizeCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">YoPaymentsGatewayAuthorizationRequest</argument>
+            <argument name="handler" xsi:type="object">YoPaymentsGatewayResponseHandlerComposite</argument>
+            <argument name="transferFactory" xsi:type="object">YoUgandaLimited\YoPaymentsGateway\Gateway\Http\TransferFactory</argument>
+            <argument name="client" xsi:type="object">YoUgandaLimited\YoPaymentsGateway\Gateway\Http\Client\ClientMock</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Authorization Request -->
+    <virtualType name="YoPaymentsGatewayAuthorizationRequest" type="Magento\Payment\Gateway\Request\BuilderComposite">
+        <arguments>
+            <argument name="builders" xsi:type="array">
+                <item name="transaction" xsi:type="string">YoUgandaLimited\YoPaymentsGateway\Gateway\Request\AuthorizationRequest</item>
+                <item name="mockData" xsi:type="string">YoUgandaLimited\YoPaymentsGateway\Gateway\Request\MockDataRequest</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <type name="YoUgandaLimited\YoPaymentsGateway\Gateway\Request\AuthorizationRequest">
+        <arguments>
+            <argument name="config" xsi:type="object">YoPaymentsGatewayConfig</argument>
+        </arguments>
+    </type>
+
+    <!-- Capture command -->
+    <virtualType name="YoPaymentsGatewayCaptureCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">YoUgandaLimited\YoPaymentsGateway\Gateway\Request\CaptureRequest</argument>
+            <argument name="handler" xsi:type="object">YoUgandaLimited\YoPaymentsGateway\Gateway\Response\TxnIdHandler</argument>
+            <argument name="transferFactory" xsi:type="object">YoUgandaLimited\YoPaymentsGateway\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">YoUgandaLimited\YoPaymentsGateway\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">YoUgandaLimited\YoPaymentsGateway\Gateway\Http\Client\ClientMock</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Capture Request -->
+    <type name="YoUgandaLimited\YoPaymentsGateway\Gateway\Request\CaptureRequest">
+        <arguments>
+            <argument name="config" xsi:type="object">YoPaymentsGatewayConfig</argument>
+        </arguments>
+    </type>
+
+    <!-- Void command -->
+    <virtualType name="YoPaymentsGatewayVoidCommand" type="Magento\Payment\Gateway\Command\GatewayCommand">
+        <arguments>
+            <argument name="requestBuilder" xsi:type="object">YoUgandaLimited\YoPaymentsGateway\Gateway\Request\VoidRequest</argument>
+            <argument name="handler" xsi:type="object">YoUgandaLimited\YoPaymentsGateway\Gateway\Response\TxnIdHandler</argument>
+            <argument name="transferFactory" xsi:type="object">YoUgandaLimited\YoPaymentsGateway\Gateway\Http\TransferFactory</argument>
+            <argument name="validator" xsi:type="object">YoUgandaLimited\YoPaymentsGateway\Gateway\Validator\ResponseCodeValidator</argument>
+            <argument name="client" xsi:type="object">YoUgandaLimited\YoPaymentsGateway\Gateway\Http\Client\ClientMock</argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Void Request -->
+    <type name="YoUgandaLimited\YoPaymentsGateway\Gateway\Request\VoidRequest">
+        <arguments>
+            <argument name="config" xsi:type="object">YoPaymentsGatewayConfig</argument>
+        </arguments>
+    </type>
+
+    <!-- Response handlers -->
+    <virtualType name="YoPaymentsGatewayResponseHandlerComposite" type="Magento\Payment\Gateway\Response\HandlerChain">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="txnid" xsi:type="string">YoUgandaLimited\YoPaymentsGateway\Gateway\Response\TxnIdHandler</item>
+                <item name="fraud" xsi:type="string">YoUgandaLimited\YoPaymentsGateway\Gateway\Response\FraudHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+
+    <!-- Value handlers infrastructure -->
+    <virtualType name="YoPaymentsGatewayValueHandlerPool" type="Magento\Payment\Gateway\Config\ValueHandlerPool">
+        <arguments>
+            <argument name="handlers" xsi:type="array">
+                <item name="default" xsi:type="string">YoPaymentsGatewayConfigValueHandler</item>
+            </argument>
+        </arguments>
+    </virtualType>
+    <virtualType name="YoPaymentsGatewayConfigValueHandler" type="Magento\Payment\Gateway\Config\ConfigValueHandler">
+        <arguments>
+            <argument name="configInterface" xsi:type="object">YoPaymentsGatewayConfig</argument>
+        </arguments>
+    </virtualType>
+
+    <type name="YoUgandaLimited\YoPaymentsGateway\Block\Info">
+        <arguments>
+            <argument name="config" xsi:type="object">YoPaymentsGatewayConfig</argument>
+        </arguments>
+    </type>
+    
+
+</config>
